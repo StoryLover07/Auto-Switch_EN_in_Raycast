@@ -1,8 +1,12 @@
+local raycastBundleID = "com.raycast.macos"
+local englishSourceID = "com.apple.keylayout.ABC"
+
 local previousInputSource = nil
+local raycastWasActive = false
 
 local function switchToEnglish()
     previousInputSource = hs.keycodes.currentSourceID()
-    hs.keycodes.currentSourceID("com.apple.keylayout.ABC")
+    hs.keycodes.currentSourceID(englishSourceID)
 end
 
 local function restorePreviousInputSource()
@@ -12,12 +16,39 @@ local function restorePreviousInputSource()
     end
 end
 
-local raycastFilter = hs.window.filter.new("Raycast")
+local function isRaycastFrontmost()
+    local app = hs.application.frontmostApplication()
+    if not app then
+        return false
+    end
 
-raycastFilter:subscribe(hs.window.filter.windowCreated, function()
-    switchToEnglish()
+    return app:bundleID() == raycastBundleID
+end
+
+local function activateRaycastMode()
+    if not raycastWasActive then
+        switchToEnglish()
+        raycastWasActive = true
+    end
+end
+
+local function deactivateRaycastMode()
+    if raycastWasActive then
+        restorePreviousInputSource()
+        raycastWasActive = false
+    end
+end
+
+-- Raycast v2 can present as a panel without a normal window, so window filters
+-- may miss open/close transitions. Track the frontmost app by bundle ID instead.
+local appWatcher = hs.application.watcher.new(function()
+    hs.timer.doAfter(0.05, function()
+        if isRaycastFrontmost() then
+            activateRaycastMode()
+        else
+            deactivateRaycastMode()
+        end
+    end)
 end)
 
-raycastFilter:subscribe(hs.window.filter.windowDestroyed, function()
-    restorePreviousInputSource()
-end)
+appWatcher:start()
