@@ -6,6 +6,8 @@
 local raycastStableSearchURL = "raycast://"
 local raycastBetaSearchURL = "raycast-x://"
 local raycastBetaAppPath = "/Applications/Raycast Beta.app"
+local raycastStableBundleID = "com.raycast.macos"
+local raycastBetaBundleID = "com.raycast-x.macos"
 local englishSourceID = "com.apple.keylayout.ABC"
 
 -- Capture command-space in Hammerspoon so Raycast's overlay session can be
@@ -112,8 +114,14 @@ end
 local function openRaycastSearch()
     if isRaycastBetaInstalled() then
         hs.urlevent.openURL(raycastBetaSearchURL)
+        hs.timer.doAfter(0.03, function()
+            hs.application.launchOrFocusByBundleID(raycastBetaBundleID)
+        end)
     else
         hs.urlevent.openURL(raycastStableSearchURL)
+        hs.timer.doAfter(0.03, function()
+            hs.application.launchOrFocusByBundleID(raycastStableBundleID)
+        end)
     end
 end
 
