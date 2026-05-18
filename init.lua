@@ -3,8 +3,6 @@
 -- window, so hs.window.filter/frontmost-window detection can miss it.
 -- Hammerspoon owns command-space instead and tracks that overlay session.
 
-local raycastBundleID = "com.raycast.macos"
-local raycastBetaBundleID = "com.raycast-x.macos"
 local raycastSearchURL = "raycast://"
 local englishSourceID = "com.apple.keylayout.ABC"
 
@@ -76,12 +74,11 @@ local function primeRaycastEnglishInputSource()
     stopEnglishTimers()
     switchToEnglishInputSource()
 
-    -- The Raycast v2 overlay can finish appearing after the hotkey returns.
-    -- Switch a few times during that short opening window, then stop so the
-    -- user can still press the Korean/English key inside the search box.
-    scheduleEnglishSwitch(0.05)
-    scheduleEnglishSwitch(0.12)
-    scheduleEnglishSwitch(0.2)
+    -- The Raycast v2 overlay can finish appearing just after the URL event.
+    -- Keep this correction window short so the search box can still be changed
+    -- manually with the Korean/English key.
+    scheduleEnglishSwitch(0.04)
+    scheduleEnglishSwitch(0.1)
 end
 
 local function restoreInputSource()
@@ -108,13 +105,6 @@ end
 
 local function openRaycastSearch()
     hs.urlevent.openURL(raycastSearchURL)
-    hs.timer.doAfter(0.05, function()
-        if hs.application.get(raycastBetaBundleID) then
-            hs.application.launchOrFocusByBundleID(raycastBetaBundleID)
-        else
-            hs.application.launchOrFocusByBundleID(raycastBundleID)
-        end
-    end)
 end
 
 local function beginRaycastSearch()
@@ -126,8 +116,8 @@ local function beginRaycastSearch()
 
     restoreSourceID = hs.keycodes.currentSourceID()
     raycastSearchActive = true
-    primeRaycastEnglishInputSource()
     openRaycastSearch()
+    primeRaycastEnglishInputSource()
 end
 
 local function hasOnlyRaycastHotkeyModifiers(flags)
