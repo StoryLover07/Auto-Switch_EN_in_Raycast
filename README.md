@@ -5,8 +5,9 @@ Hammerspoon configuration that automatically switches the input source to Englis
 ## Features
 
 - Automatically switches to English when Raycast window appears
-- Restores the previous input source (Korean/English) when Raycast is closed
-- You can still freely toggle between Korean and English inside Raycast
+- Restores the previous input source (Current Language/English) when Raycast is closed
+- You can still freely toggle between your Current Language and English inside Raycast
+- ALSO available for Raycast ver.2!!! 
 
 ## Requirements
 

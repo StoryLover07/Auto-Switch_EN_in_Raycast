@@ -1,7 +1,7 @@
 -- Raycast Input Source Switcher
 -- Raycast v2's main search UI is a system overlay, not a normal macOS
 -- window, so hs.window.filter/frontmost-window detection can miss it.
--- Hammerspoon owns the Raycast hotkey instead and tracks that overlay session.
+-- Hammerspoon owns command-space instead and tracks that overlay session.
 
 local raycastBundleID = "com.raycast.macos"
 local raycastBetaBundleID = "com.raycast-x.macos"
