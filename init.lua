@@ -3,7 +3,9 @@
 -- window, so hs.window.filter/frontmost-window detection can miss it.
 -- Hammerspoon owns command-space instead and tracks that overlay session.
 
-local raycastSearchURL = "raycast://"
+local raycastStableSearchURL = "raycast://"
+local raycastBetaSearchURL = "raycast-x://"
+local raycastBetaAppPath = "/Applications/Raycast Beta.app"
 local englishSourceID = "com.apple.keylayout.ABC"
 
 -- Capture command-space in Hammerspoon so Raycast's overlay session can be
@@ -103,8 +105,16 @@ local function finishRaycastSearchSoon()
     hs.timer.doAfter(0.08, finishRaycastSearch)
 end
 
+local function isRaycastBetaInstalled()
+    return hs.fs.attributes(raycastBetaAppPath, "mode") == "directory"
+end
+
 local function openRaycastSearch()
-    hs.urlevent.openURL(raycastSearchURL)
+    if isRaycastBetaInstalled() then
+        hs.urlevent.openURL(raycastBetaSearchURL)
+    else
+        hs.urlevent.openURL(raycastStableSearchURL)
+    end
 end
 
 local function beginRaycastSearch()
